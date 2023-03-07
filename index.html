@@ -64,7 +64,7 @@
         graphics = this.add.graphics();
         graphics.fillStyle(0x000000, 4);
         //  32px radius on the corners
-        graphics.fillRoundedRect(inwidth/2, inheight/2, trunc*240+8, trunc*240+8, 4);
+        graphics.fillRoundedRect((inwidth/2)-((trunc*240)/2)-4, (inheight/2)-((trunc*240)/2)-4, trunc*240+8, trunc*240+8, 4);
 
         var screen_bg = this.add.rectangle(inwidth/2, inheight/2, trunc*240, trunc*240, 0x808080)
 
