@@ -64,17 +64,17 @@
         graphics = this.add.graphics();
         graphics.fillStyle(0x000000, 4);
         //  32px radius on the corners
-        graphics.fillRoundedRect((inwidth/2)-((trunc*240)/2)-12, (inheight/2)-((trunc*240)/2)-12, trunc*240+24, trunc*240+24, 12);
+        graphics.fillRoundedRect((inwidth/2)-((trunc*240)/2)-18, (inheight/2)-((trunc*240)/2)-18, trunc*240+36, trunc*240+24, 36);
 
         var screen_bg = this.add.rectangle(inwidth/2, inheight/2, trunc*240, trunc*240, 0x808080)
 
-        var particles = this.add.particles('red');
+        //var particles = this.add.particles('red');
 
-        var emitter = particles.createEmitter({
-            speed: 100,
-            scale: { start: 1, end: 0 },
-            blendMode: 'ADD'
-        });
+        //var emitter = particles.createEmitter({
+        //    speed: 100,
+        //    scale: { start: 1, end: 0 },
+        //    blendMode: 'ADD'
+        //});
 
         var logo = this.physics.add.image(400, 100, 'logo');
         
