@@ -64,7 +64,7 @@
         graphics = this.add.graphics();
         graphics.fillStyle(0x000000, 4);
         //  32px radius on the corners
-        graphics.fillRoundedRect((inwidth/2)-((trunc*240)/2)-18, (inheight/2)-((trunc*240)/2)-18, trunc*240+36, trunc*240+24, 36);
+        graphics.fillRoundedRect((inwidth/2)-((trunc*240)/2)-18, (inheight/2)-((trunc*240)/2)-18, trunc*240+36, trunc*240+36, 24);
 
         var screen_bg = this.add.rectangle(inwidth/2, inheight/2, trunc*240, trunc*240, 0x808080)
 
@@ -83,7 +83,7 @@
         var height_text = this.add.text(10, inheight-50, inwidth);
         var width_text = this.add.text(10, inheight-25, inheight);
 
-        logo.setVelocity(100, 200);
+        logo.setVelocity(10, 20);
         logo.setBounce(1, 1);
         logo.setCollideWorldBounds(true);
 
