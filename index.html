@@ -38,6 +38,10 @@
     function create ()
     {
         this.add.image(400, 300, 'sky');
+        
+        game.scale.pageAlignHorizontally = true;
+        game.scale.pageAlignVertically = true;
+        game.scale.refresh();
 
         var particles = this.add.particles('red');
 
