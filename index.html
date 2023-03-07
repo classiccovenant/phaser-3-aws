@@ -15,6 +15,19 @@
     var inwidth = window.innerWidth;
     var inheight = window.innerHeight;
     
+    var x_trunc = Math.floor(inwidth/240);
+    var y_trunc = Math.floor(inheight/240);
+    
+    var trunc = 0;
+    if (x_trunc > y_trunc){
+        var trunc = y_trunc;
+    }
+    else{
+        var trunc = x_trunc;
+    }
+    
+    
+    
     var config = {
         type: Phaser.AUTO,
         width: inwidth,
@@ -45,6 +58,8 @@
     function create ()
     {
         this.add.image(2000, 2000, 'purp');
+
+        var screen_bg = this.add.rectangle(inwidth/2, inheight/2, trunc, trunc, 0x808080)
 
         var particles = this.add.particles('red');
 
