@@ -22,7 +22,7 @@
         physics: {
             default: 'arcade',
             arcade: {
-                gravity: { y: 200 }
+                gravity: { y: 20 }
             }
         },
         scene: {
@@ -37,8 +37,8 @@
     function preload ()
     {
 
-        this.load.image('purp', 'assets/gb_purple.png');
-        this.load.image('logo', 'assets/phaser3-logo.png');
+        this.load.image('purp', 'assets/gb_purple.jpg');
+        this.load.image('logo', 'assets/modifio-logo.png');
         this.load.image('red', 'assets/red.png');
     }
 
@@ -57,9 +57,9 @@
         var logo = this.physics.add.image(400, 100, 'logo');
         
         var version = "udev_3";
-        var version_text = this.add.text(100, 300, version);
-        var height_text = this.add.text(100, 350, inwidth);
-        var width_text = this.add.text(100, 400, inheight);
+        var version_text = this.add.text(100, inheight-150, version);
+        var height_text = this.add.text(100, inheight-100, inwidth);
+        var width_text = this.add.text(100, inheight-50, inheight);
 
         logo.setVelocity(100, 200);
         logo.setBounce(1, 1);
