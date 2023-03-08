@@ -99,21 +99,25 @@
         clickButton.on('pointerdown', function (pointer) 
         {
             this.setTint(0x000000);
+            this.loadTexture('cog_click');
         });
 
         clickButton.on('pointerout', function (pointer) 
         {
             this.clearTint();
+            this.loadTexture('cog');
         });
 
         clickButton.on('pointerup', function (pointer) 
         {
             this.setTint(0xaaaaaa);
+            this.loadTexture('cog_hover');
         });
 
         clickButton.on('pointerover', function (pointer) 
         {
             this.setTint(0xaaaaaa);
+            this.loadTexture('cog_hover');
         });
     }
     </script>
