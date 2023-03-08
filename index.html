@@ -53,6 +53,10 @@
         this.load.image('purp', 'assets/gb_purple.jpg');
         this.load.image('logo', 'assets/modifio-logo.png');
         this.load.image('red', 'assets/red.png');
+        
+        this.load.image('cog', 'assets/cog.png');
+        this.load.image('cog_hover', 'assets/cog_hover.png');
+        this.load.image('cog_click', 'assets/cog_click.png');
     }
     
     var graphics;
@@ -88,6 +92,29 @@
         logo.setCollideWorldBounds(true);
 
         //emitter.startFollow(logo);
+        
+        var clickButton = this.add.sprite(inwidth-10, inheight-10, 'cog')
+        .setInteractive();
+        
+        clickButton.on('pointerdown', function (pointer) 
+        {
+            this.setTint(0x000000);
+        });
+
+        clickButton.on('pointerout', function (pointer) 
+        {
+            this.clearTint();
+        });
+
+        clickButton.on('pointerup', function (pointer) 
+        {
+            this.setTint(0xaaaaaa);
+        });
+
+        clickButton.on('pointerover', function (pointer) 
+        {
+            this.setTint(0xaaaaaa);
+        });
     }
     </script>
 
