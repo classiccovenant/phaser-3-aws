@@ -1,122 +1,494 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
-</head>
-<body>
-<style>
-* {
-	margin: 0;
-	padding: 0;
-}
-</style>
+		<!DOCTYPE html>
+		<html>
+		<head>
+			<script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+			
+		</head>
+		<body>
+		<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		</style>
 
-    <script>
-    var inwidth = window.innerWidth;
-    var inheight = window.innerHeight;
-    
-    var x_trunc = Math.floor(inwidth/240);
-    var y_trunc = Math.floor(inheight/240);
-    
-    var trunc = 0;
-    if (x_trunc > y_trunc){
-        var trunc = y_trunc;
-    }
-    else{
-        var trunc = x_trunc;
-    }
-    
-    
-    
-    var config = {
-        type: Phaser.AUTO,
-        width: inwidth,
-        height: inheight,
-        physics: {
-            default: 'arcade',
-            arcade: {
-                gravity: { y: 20 }
-            }
-        },
-        scene: {
-            preload: preload,
-            create: create
-        }
-        
-    };
+			<script>
+			var inwidth = window.innerWidth;
+			var inheight = window.innerHeight;
+			
+			var screen_margin = 16;
+			
+			var x_trunc = Math.floor((inwidth-2*screen_margin)/240);
+			var y_trunc = Math.floor((inheight-2*screen_margin)/240);
+			
+			var trunc = 0;
+			if (x_trunc > y_trunc){
+				var trunc = y_trunc;
+				var saved_orientation = 0;
+			}
+			else{
+				var trunc = x_trunc;
+				var saved_orientation = 1;
+			}
+			if (trunc == 0) {
+				trunc = 1;
+			}
+			var screenshot_current = 1;
+			
+			
+			var config = {
+				type: Phaser.AUTO,
+				width: inwidth,
+				height: inheight,
+				backgroundColor: '#645097',
+				physics: {
+					default: 'arcade',
+					arcade: {
+						gravity: { y: 20 }
+					}
+				},
+				//scale: {mode: Phaser.Scale.FIT,},
+				//pixelArt: true,
+				antialias: false,
+				scene: {
+					preload: preload,
+					create: create
+				}
+				//transparent: true,
+				//parent: 'gameContainer',
+			};
 
-    var game = new Phaser.Game(config);
+			var game = new Phaser.Game(config);
 
-    function preload ()
-    {
+			function preload ()
+			{
+				//this.load.image('logo', 'wp-content/uploads/2023/03/modifio-logo.png');
+				
+				this.load.image('cog', 'wp-content/uploads/2023/03/cog.png');
+				this.load.image('cog_hover', 'wp-content/uploads/2023/03/cog_hover.png');
+				this.load.image('cog_click', 'wp-content/uploads/2023/03/cog_click.png');
 
-        this.load.image('purp', 'assets/gb_purple.jpg');
-        this.load.image('logo', 'assets/modifio-logo.png');
-        this.load.image('red', 'assets/red.png');
-        
-        this.load.image('cog', 'assets/cog.png');
-        this.load.image('cog_hover', 'assets/cog_hover.png');
-        this.load.image('cog_click', 'assets/cog_click.png');
-    }
-    
-    var graphics;
-    
-    function create ()
-    {
-        this.add.image(2000, 2000, 'purp');
-        
-        graphics = this.add.graphics();
-        graphics.fillStyle(0x000000, 4);
-        //  32px radius on the corners
-        graphics.fillRoundedRect((inwidth/2)-((trunc*240)/2)-18, (inheight/2)-((trunc*240)/2)-18, trunc*240+36, trunc*240+36, 24);
+				this.load.image('screenshot', 'wp-content/uploads/2023/04/screenshot.png');
+				this.load.image('screenshot2', 'wp-content/uploads/2023/04/screenshot2.png');
+				this.load.image('screenshot3', 'wp-content/uploads/2023/04/screenshot3.png');
+				
+				this.load.image('button_a', 'wp-content/uploads/2023/04/button_a.png');
+				this.load.image('button_b', 'wp-content/uploads/2023/04/button_b.png');
+				this.load.image('button_arrow', 'wp-content/uploads/2023/04/button_arrow.png');
+				
+				
+				this.load.image('button_green_circle', 'wp-content/uploads/2023/04/green_circle100.png');
+				this.load.image('button_red_circle', 'wp-content/uploads/2023/04/red_circle100.png');
+				
+				this.load.plugin('rexclickoutsideplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexclickoutsideplugin.min.js', true);
+			}
+			
+			var graphics;
+			
+			function create ()
+			{
+				game.input.addPointer(3);
+				//var div = document.getElementById('gameContainer');
+				//div.style.backgroundColor = "#645097";
+				
+				if (inheight > inwidth) {
+					var vert = (1/2)*(inwidth-(trunc*240));
+				}
+				else {
+					var vert = (1/2)*inheight-(1/2)*trunc*240;
+				}
+				
+				graphics = this.add.graphics();
+				graphics.fillStyle(0x000000, 4);
+				//  32px radius on the corners
+				graphics.fillRoundedRect((inwidth/2)-((trunc*240)/2)-18, vert-18, trunc*240+36, trunc*240+36, 24);
 
-        var screen_bg = this.add.rectangle(inwidth/2, inheight/2, trunc*240, trunc*240, 0x808080)
+				var screen_bg_x = Math.floor(inwidth/2);
+				var screen_bg_y = Math.floor(((1/2)*(trunc*240))+vert);
+				var screen_bg = this.add.rectangle(screen_bg_x, screen_bg_y, trunc*240, trunc*240, 0x808080);
+				
+				var screenshot_sprite = this.add.sprite(screen_bg_x,screen_bg_y,"screenshot");
+				screenshot_sprite.smoothed = false;
+				screenshot_sprite.scaleX = trunc;
+				screenshot_sprite.scaleY = trunc;
 
-        //var particles = this.add.particles('red');
+				//var emitter = particles.createEmitter({
+				//    speed: 100,
+				//    scale: { start: 1, end: 0 },
+				//    blendMode: 'ADD'
+				//});
 
-        //var emitter = particles.createEmitter({
-        //    speed: 100,
-        //    scale: { start: 1, end: 0 },
-        //    blendMode: 'ADD'
-        //});
+				//var logo = this.physics.add.image(400, 100, 'logo');
+				
+				var version = "udev_6";
+				var ping_pos = game.input.activePointer.x +"/"+game.input.activePointer.y;
+				var pos_text = this.add.text(10, inheight-100, ping_pos);
+				var version_text = this.add.text(10, inheight-75, version);
+				var height_text = this.add.text(10, inheight-50, inwidth);
+				var width_text = this.add.text(10, inheight-25, inheight);
 
-        var logo = this.physics.add.image(400, 100, 'logo');
-        
-        var version = "udev_4";
-        var version_text = this.add.text(10, inheight-75, version);
-        var height_text = this.add.text(10, inheight-50, inwidth);
-        var width_text = this.add.text(10, inheight-25, inheight);
+				//logo.setVelocity(10, 20);
+				//logo.setBounce(1, 1);
+				//logo.setCollideWorldBounds(true);
 
-        logo.setVelocity(10, 20);
-        logo.setBounce(1, 1);
-        logo.setCollideWorldBounds(true);
+				//emitter.startFollow(logo);
+				;
+				
+				//var trigger1 = this.add.rectangle(inwidth/8, (1/2)*trigger_height, inwidth/4, trigger_height, 0xbcbebd);
+				//var trigger2 = this.add.rectangle((7*inwidth)/(8),(1/2)*trigger_height, inwidth/4, trigger_height, 0xbcbebd);
+				
+				
+				//start and select
+				if (saved_orientation == 0) {
+					graphics.fillStyle(0xbcbebd);
+					var st_vert = (1/3)*(inheight-trunc*240)*(1/2);
+					var st_hor = (1/3)*(trunc*240);
+					var sel_cent = [(inwidth/2)-(1/2)*(trunc*240)+(4/27)*(trunc*240),(inheight/2)+(1/2)*(trunc*240) + (1/3)*(inheight-trunc*240)*(1/2)];
+					var st_cent = [(inwidth/2)-(1/2)*(trunc*240)+(2/3)*(trunc*240)-(4/27)*(trunc*240),(inheight/2)+(1/2)*(trunc*240) + (1/3)*(inheight-trunc*240)*(1/2)];
+					graphics.fillRoundedRect(st_cent[0], st_cent[1], st_hor, st_vert,8);
+					//graphics.fillRoundedRect(sel_cent[0], sel_cent[1], st_hor, st_vert,8);
+					
+					if ((inwidth-(240*trunc))/2 < inheight) {
+						//tall
+						var butt_size = (inwidth-(240*trunc))/2-54;
+						graphics.fillStyle(0x5a458f);
+						var butt_cent1 = [18,(inheight/2)-(butt_size/2)];
+						var butt_cent2 = [inwidth-18-butt_size,(inheight/2)-(butt_size/2)];
+						//graphics.fillRoundedRect(butt_cent1[0],butt_cent1[1],butt_size,butt_size,24);
+						//graphics.fillRoundedRect(butt_cent2[0],butt_cent2[1],butt_size,butt_size,24);
+					}
+					else {
+						// short
+						var butt_size = (trunc*240);
+						graphics.fillStyle(0x5a458f);
+						var butt_cent1 = [((inwidth/2)-(240*trunc*(1/2)))/2-((1/2)*butt_size),vert];
+						var butt_cent2 = [inwidth-(((inwidth/2)-(240*trunc*(1/2)))/2)-((1/2)*butt_size),vert];
+						//graphics.fillRoundedRect(butt_cent1[0],butt_cent1[1],butt_size,butt_size,24);
+						//graphics.fillRoundedRect(butt_cent2[0],butt_cent2[1],butt_size,butt_size,24);
+					}
+						
+				
+				}
+				if (saved_orientation == 1) {
+				
+					graphics.fillStyle(0xbcbebd);
+					var st_vert = (1/6)*(vert);
+					var st_hor = (1/3)*(trunc*240);
+					var sel_cent = [(inwidth/2)-(1/2)*(trunc*240)+(4/27)*(trunc*240),inheight - (1/6) * (vert)-16];
+					var st_cent = [(inwidth/2)-(1/2)*(trunc*240)+(2/3)*(trunc*240)-(4/27)*(trunc*240),inheight - (1/6)*(vert)-16];
+					
+					//graphics.fillRoundedRect(sel_cent[0], sel_cent[1], st_hor, st_vert,8);
+					graphics.fillRoundedRect(st_cent[0], st_cent[1], st_hor, st_vert,8);
+				
+					if ((inheight-(240*trunc)-vert-((1/3)*vert)-16)<inwidth/2) {
+						// short
+						var butt_size = (inheight-vert-(240*trunc)-((1/6)*vert)-52);
+						graphics.fillStyle(0x5a458f);
+						var butt_cent1 = [4,vert+(240*trunc)+18];
+						var butt_cent2 = [inwidth-4-butt_size,vert+(240*trunc)+18];
+						//graphics.fillRoundedRect(butt_cent1[0],butt_cent1[1],butt_size,butt_size,24);
+						//graphics.fillRoundedRect(butt_cent2[0],butt_cent2[1],butt_size,butt_size,24);
+					}
+					else {
+						// tall
+						var butt_size = (inwidth-18)/2;
+						graphics.fillStyle(0x5a458f);
+						var butt_cent1 = [6,(inheight-vert-(trunc*240))/2+vert+(240*trunc)-(butt_size/2)];
+						var butt_cent2 = [inwidth-butt_size-6,(inheight-vert-(trunc*240))/2+vert+(240*trunc)-(butt_size/2)];
+						//graphics.fillRoundedRect(butt_cent1[0],butt_cent1[1],butt_size,butt_size,24);
+						//graphics.fillRoundedRect(butt_cent2[0],butt_cent2[1],butt_size,butt_size,24);
+					}
+				}
+				
+				var trigger_height = vert*(2/3)+18;
+				
+				
+				
+				
+				var button_up = this.add.image(0,0,'button_arrow').setInteractive();
+				var button_left = this.add.image(0,16,'button_arrow').setInteractive();
+				var button_down = this.add.image(16,16,'button_arrow').setInteractive();
+				var button_right = this.add.image(16,0,'button_arrow').setInteractive();
+				
+				//var button_login = this.add.rectangle(-18+(1/2)*(inwidth/4+18), -18+(1/2)*(trigger_height), inwidth/4+18, trigger_height,0xbbbdbd).setInteractive();
+				var button_login = this.add.rectangle(1+(inwidth/8), 1+(1/2)*trigger_height, inwidth/4-1, trigger_height,0xbbbdbd).setInteractive();
+				button_login.setFillStyle(0x000000,0);
+				graphics.fillStyle(0xbcbebd);
+				graphics.fillRoundedRect(-18, -18, inwidth/4+18, trigger_height,24);	
+				button_login.on('pointerover',function(pointer) { 
+					graphics.fillStyle(0x8c8c8c);
+					graphics.fillRoundedRect(-18, -18, inwidth/4+18, trigger_height,24);
+				//	this.setTint(0xaaaaaa);
+				});
+				button_login.on('pointerout',function(pointer) { 
+					graphics.fillStyle(0xbcbebd);
+					graphics.fillRoundedRect(-18, -18, inwidth/4+18, trigger_height,24);
+				//	this.setTint(0xaaaaaa);
+				});
+				button_login.on('pointerdown',function(pointer) { 	
+					graphics.fillStyle(0xbcbebd);
+					graphics.fillRoundedRect(-18, -18, inwidth/4+18, trigger_height,24);
+					window.location.assign(window.location.href+"#login");
+					console.log(window.location.href);
+					if (window.location.href == 'https://modif.io/#login') {
+						//document.xoo-el-container.xoo-el-popup-active.style="visibility: visible;";
+						//var a = document.createElement('a');
+						//window.location.assign("https://modif.io");
+						//window.location.reload();
+						//window.location.assign("https://modif.io#login");
+					}
+					else {
+						window.location.assign("https://modif.io#login");
+						//console.log(window.location.href);
+					}
+				});
+				button_login.on('pointerdownoutside',function(pointer) { 
+					graphics.fillStyle(0xbcbebd);
+					graphics.fillRoundedRect(-18, -18, inwidth/4+18, trigger_height,24);
+				//	this.setTint(0xaaaaaa);
+				});
+				button_login.on('pointerupoutside',function(pointer) { 
+					graphics.fillStyle(0xbcbebd);
+					graphics.fillRoundedRect(-18, -18, inwidth/4+18, trigger_height,24);
+				//	this.setTint(0xaaaaaa);
+				});
+				
+				var button_shop = this.add.rectangle((7*inwidth)/(8), -18+(1/2)*(trigger_height), inwidth/4+18, trigger_height,0xbbbdbd).setInteractive();
+				button_shop.setFillStyle(0x000000,0);
+				graphics.fillRoundedRect((3*inwidth)/(4),-18, inwidth/4+18, trigger_height,24);
+				button_shop.on('pointerover',function(pointer) { 
+					graphics.fillStyle(0x8c8c8c);
+					graphics.fillRoundedRect((3*inwidth)/(4),-18, inwidth/4+18, trigger_height,24);
+				//	this.setTint(0xaaaaaa);
+				});
+				button_shop.on('pointerout',function(pointer) { 
+					graphics.fillStyle(0xbcbebd);
+					graphics.fillRoundedRect((3*inwidth)/(4),-18, inwidth/4+18, trigger_height,24);
+				//	this.setTint(0xaaaaaa);
+				});
+				button_shop.on('pointerdown',function(pointer) { 			
+					window.open('https://modif.io/shop');
+				});
+				
+				var button_sel = this.add.rectangle(sel_cent[0]+(1/2)*st_hor, sel_cent[1]+(1/2)*st_vert, st_hor, st_vert,0xbbbdbd).setInteractive();
+				button_sel.setFillStyle(0x000000,0);
+				graphics.fillRoundedRect(sel_cent[0],sel_cent[1], st_hor, st_vert,8);
+				button_sel.on('pointerover',function(pointer) { 
+					graphics.fillStyle(0x8c8c8c);
+					graphics.fillRoundedRect(sel_cent[0],sel_cent[1], st_hor, st_vert,8);
+				//	this.setTint(0xaaaaaa);
+				});
+				button_sel.on('pointerout',function(pointer) { 
+					graphics.fillStyle(0xbcbebd);
+					graphics.fillRoundedRect(sel_cent[0],sel_cent[1], st_hor, st_vert,8);
+				//	this.setTint(0xaaaaaa);
+				});
+				
+				var button_st = this.add.rectangle(st_cent[0]+(1/2)*st_hor, st_cent[1]+(1/2)*st_vert, st_hor, st_vert,0xbbbdbd).setInteractive();
+				button_st.setFillStyle(0x000000,0);
+				graphics.fillRoundedRect(st_cent[0],st_cent[1], st_hor, st_vert,8);
+				button_st.on('pointerover',function(pointer) { 
+					graphics.fillStyle(0x8c8c8c);
+					graphics.fillRoundedRect(st_cent[0],st_cent[1], st_hor, st_vert,8);
+				//	this.setTint(0xaaaaaa);
+				});
+				button_st.on('pointerout',function(pointer) { 
+					graphics.fillStyle(0xbcbebd);
+					graphics.fillRoundedRect(st_cent[0],st_cent[1], st_hor, st_vert,8);
+				//	this.setTint(0xaaaaaa);
+				});
 
-        //emitter.startFollow(logo);
-        
-        var clickButton = this.add.sprite(inwidth-10, inheight-10, 'cog')
-        .setInteractive();
-        
-        clickButton.on('pointerdown', function (pointer) 
-        {
-            this.setTint(0x808080);
-        });
+				var radius = (butt_size)/(3.41421356237);
+				//var button_green = this.add.circle(butt_cent2[0]+butt_size-radius,butt_cent2[1]+radius,radius,0x45cac5);
+				//var button_green = this.add.sprite(butt_cent2[0],butt_cent2[1],'button_a');
+				//var button_red = this.add.circle(butt_cent2[0]+radius,butt_cent2[1]+butt_size-radius,radius,0xf11d33);
+				
+				//var shp_green = new Phaser.Geom.Circle(-radius, -radius, radius);
+				
+				//button_green.setInteractive,(shp_green, Phaser.Geom.Circle.Contains);
+				
 
-        clickButton.on('pointerout', function (pointer) 
-        {
-            this.clearTint();
-        });
+				
+				//---------------------
+				//var sprite2 = this.add.circle(butt_cent2[0]+butt_size-radius,butt_cent2[1]+radius,radius,0x45cac5);
+				var sprite_gb = this.add.sprite(butt_cent2[0]+butt_size-radius, butt_cent2[1]+radius, 'button_green_circle').setScale((radius/50)*.92);
+				var shape = new Phaser.Geom.Circle(sprite_gb.width/2, sprite_gb.width/2, radius/sprite_gb.scaleX);
+				sprite_gb.setInteractive(shape, Phaser.Geom.Circle.Contains);
 
-        clickButton.on('pointerup', function (pointer) 
-        {
-            this.setTint(0xaaaaaa);
-        });
+				//  Input Event listeners
+				sprite_gb.on('pointerover', function (activePointer) {
+					sprite_gb.setTint(0x7878ff);
+				});
+				sprite_gb.on('pointerdown',function(activePointer) { sprite_gb.setTint(0xaaaaaa); increment_ss();});
+				sprite_gb.on('pointerup',function(activePointer) { sprite_gb.clearTint(); });
+				sprite_gb.on('pointerdownoutside',function(activePointer) { sprite_gb.clearTint(); });
+				sprite_gb.on('pointerout', function (activePointer) {
+					sprite_gb.clearTint();
+				});
+				var clickOutside_gb = this.plugins.get('rexclickoutsideplugin').add(sprite_gb, {
+					mode: 'pointerup'
+				})
+					.on('clickoutside', function (activePointer) {
+						sprite_gb.clearTint();
+					})
+				
+				var sprite_rb = this.add.sprite(butt_cent2[0]+radius, butt_cent2[1]+butt_size-radius, 'button_red_circle').setScale((radius/50)*.92);
+				var shape = new Phaser.Geom.Circle(sprite_rb.width/2, sprite_rb.width/2, radius/sprite_rb.scaleX);
+				sprite_rb.setInteractive(shape, Phaser.Geom.Circle.Contains);
 
-        clickButton.on('pointerover', function (pointer) 
-        {
-            this.setTint(0xaaaaaa);
-        });
-    }
-    </script>
+				//  Input Event listeners
+				sprite_rb.on('pointerover', function (activePointer) {
+					sprite_rb.setTint(0x7878ff);
+				});
+				sprite_rb.on('pointerdown',function(activePointer) { sprite_rb.setTint(0xaaaaaa); decrement_ss();});
+				sprite_rb.on('pointerup',function(activePointer) { sprite_rb.clearTint(); });
+				sprite_rb.on('pointerdownoutside',function(activePointer) { sprite_rb.clearTint(); });
+				sprite_rb.on('pointerout', function (activePointer) {
+					sprite_rb.clearTint();
+				});
+				var clickOutside_rb = this.plugins.get('rexclickoutsideplugin').add(sprite_rb, {
+					mode: 'pointerup'
+				})
+					.on('clickoutside', function (activePointer) {
+						sprite_rb.clearTint();
+					})
+				
+				function increment_ss() {
+					if (screenshot_current == 1) {
+						screenshot_sprite.setTexture('screenshot2');
+						screenshot_current = 2;
+					}
+					else if (screenshot_current == 2) {
+						screenshot_sprite.setTexture('screenshot3');
+						screenshot_current = 3;
+					}
+					else {
+						screenshot_sprite.setTexture('screenshot');
+						screenshot_current = 1;
+					}
+					console.log(screenshot_current);
+				};
+				
+				function decrement_ss() {
+					if (screenshot_current == 1) {
+						screenshot_sprite.setTexture('screenshot3');
+						screenshot_current = 3;
+					}
+					else if (screenshot_current == 2) {
+						screenshot_sprite.setTexture('screenshot');
+						screenshot_current = 1;
+					}
+					else {
+						screenshot_sprite.setTexture('screenshot2');
+						screenshot_current = 2;
+					}
+					console.log(screenshot_current);
+				};
+				
+				var left_thumb = "";
+				var right_thumb = "";
+				
+				var clickOutside_up = this.plugins.get('rexclickoutsideplugin').add(button_up, {
+					mode: 'pointerup'
+				})
+					.on('clickoutside', function (activePointer) {
+						button_up.clearTint();
+					})
+					
+				var clickOutside_down = this.plugins.get('rexclickoutsideplugin').add(button_up, {
+					mode: 'pointerup'
+				})
+					.on('clickoutside', function (activePointer) {
+						button_down.clearTint();
+					})
+				var clickOutside_left = this.plugins.get('rexclickoutsideplugin').add(button_up, {
+					mode: 'pointerup'
+				})
+					.on('clickoutside', function (activePointer) {
+						button_left.clearTint();
+					})
+				var clickOutside_right = this.plugins.get('rexclickoutsideplugin').add(button_up, {
+					mode: 'pointerup'
+				})
+					.on('clickoutside', function (activePointer) {
+						button_right.clearTint();
+					})
+				
+				button_up.on('pointerover',function(pointer) { this.setTint(0xaaaaaa); });
+				button_down.on('pointerover',function(pointer) { this.setTint(0xaaaaaa); });
+				button_left.on('pointerover',function(pointer) { this.setTint(0xaaaaaa); });
+				button_right.on('pointerover',function(pointer) { this.setTint(0xaaaaaa); });
+				
+				button_up.on('pointerout',function(pointer) { this.clearTint(); });
+				button_down.on('pointerout',function(pointer) { this.clearTint(); });
+				button_left.on('pointerout',function(pointer) { this.clearTint(); });
+				button_right.on('pointerout',function(pointer) { this.clearTint(); });
+				
+				button_up.on('pointerdown',function(pointer) { this.setTint(0xaaaaaa); decrement_ss(); left_thumb = pointer.id;});
+				button_down.on('pointerdown',function(pointer) { this.setTint(0xaaaaaa); increment_ss();});
+				button_left.on('pointerdown',function(pointer) { this.setTint(0xaaaaaa); decrement_ss();});
+				button_right.on('pointerdown',function(pointer) { increment_ss(); this.setTint(0xaaaaaa); });
+				
+				button_up.on('pointerup',function(pointer) { this.clearTint(); });
+				button_down.on('pointerup',function(pointer) { this.clearTint(); });
+				button_left.on('pointerup',function(pointer) { this.clearTint(); });
+				button_right.on('pointerup',function(pointer) { this.clearTint(); });
+				
 
-</body>
-</html>
+				
+				var arrow_scale = (((butt_size*1.5)^2)/(2*(32^2)))^(1/2);
+				
+				
+				var arrow_container = this.add.container(butt_cent1[0]+butt_size/2,butt_cent1[1]+butt_size/4, [button_up, button_left, button_down, button_right]);
+				arrow_container.setAngle(45);
+				arrow_container.setScale(arrow_scale);
+				
+				//var ab_container = this.add.container(butt_cent2[0]+(2*butt_size)/3,butt_cent2[1]+(1/3)*butt_size,[button_green,button_red]);
+				//ab_container.setAngle(45);
+				//ab_container.setScale(arrow_scale*1.3);
+				
+				var login_name = "LOGIN";
+				var login_button_text = this.add.text(20, (1/4)*trigger_height, login_name);
+				
+				var shop_name = "SHOP";
+				var shop_button_text = this.add.text(inwidth-80, (1/4)*trigger_height, shop_name);
+				
+				
+				var clickButton = this.add.sprite(inwidth-10, inheight-10, 'cog')
+				.setInteractive();
+				
+				clickButton.on('pointerdown', function (pointer) 
+				{
+					this.setTint(0x808080);
+				});
+
+				clickButton.on('pointerout', function (pointer) 
+				{
+					this.clearTint();
+				});
+
+				clickButton.on('pointerup', function (pointer) 
+				{
+					this.setTint(0xaaaaaa);
+				});
+
+				clickButton.on('pointerover', function (pointer) 
+				{
+					this.setTint(0xaaaaaa);
+				});
+				
+
+			}
+
+			//update() {
+			//	this.pos_text.setText([
+			//		`pointer1.isDown: ${this.input.pointer1.isDown}`,
+			//		`pointer2.isDown: ${this.input.pointer2.isDown}`,
+			//		`pointer3.isDown: ${this.input.pointer3.isDown}`,
+			//		`pointer4.isDown: ${this.input.pointer4.isDown}`
+			//	]);
+			//}
+			</script>
+
+		</body>
+		</html>
